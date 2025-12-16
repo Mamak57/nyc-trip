@@ -1,0 +1,12 @@
+{
+  "name": "NYC Tip & Tax",
+  "short_name": "NYC Tip",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#5f6bdc",
+  "theme_color": "#5f6bdc",
+  "icons": [
+    { "src": "icon-192.jpg", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "icon-512.jpg", "sizes": "512x512", "type": "image/jpeg" }
+  ]
+}
