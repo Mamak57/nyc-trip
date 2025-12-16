@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NYC Tip & Tax</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .app {
+      background: #fff;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #333;
+      font-weight: 700;
+    }
+
+    .card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 20px;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    h2 {
+      font-size: 13px;
+      margin-bottom: 12px;
+      color: #555;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      padding: 14px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      color: #333;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    button.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border-color: #667eea;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .result {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 20px;
+      color: #fff;
+      margin-top: 20px;
+    }
+
+    .details {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+
+    .total-usd {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .total-eur {
+      font-size: 20px;
+      opacity: 0.9;
+    }
+
+    .history {
+      margin-top: 20px;
+    }
+
+    .history-item {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .history-item:active {
+      transform: scale(0.98);
+    }
+
+    .history-info {
+      flex: 1;
+    }
+
+    .history-amount {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .history-details {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .history-delete {
+      background: #ff4757;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .empty-history {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+    <h1>💵 NYC Tip & Tax</h1>
+
+    <div class="card">
+      <div class="input-group">
+        <label>💰 Montant affiché (USD)</label>
+        <input type="number" id="amount" placeholder="42.00" step="0.01">
+      </div>
+
+      <div class="input-group">
+        <label>💱 Taux USD → EUR</label>
+        <input type="number" id="rate" placeholder="0.93" step="0.01">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Usage rapide</h2>
+      <div class="buttons">
+        <button data-tip="0">Aucun tip</button>
+        <button data-tip="0.20">Restaurant 20%</button>
+      </div>
+
+      <h2 style="margin-top: 16px;">✋ Pourboire manuel</h2>
+      <div class="buttons">
+        <button data-tip="0.15">15%</button>
+        <button data-tip="0.18">18%</button>
+        <button data-tip="0.20">20%</button>
+        <button data-tip="0.22">22%</button>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="details" id="details">—</div>
+      <div class="total-usd" id="total-usd">Total USD : —</div>
+      <div class="total-eur" id="total-eur">Total EUR : —</div>
+    </div>
+
+    <div class="history">
+      <h2>📜 Historique</h2>
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const TAX_RATE = 0.08875;
+
+    const amountInput = document.getElementById("amount");
+    const rateInput = document.getElementById("rate");
+    const details = document.getElementById("details");
+    const totalUsd = document.getElementById("total-usd");
+    const totalEur = document.getElementById("total-eur");
+    const buttons = document.querySelectorAll("button[data-tip]");
+    const historyList = document.getElementById("history-list");
+
+    let selectedTip = parseFloat(localStorage.getItem("tip")) || 0;
+    rateInput.value = localStorage.getItem("rate") || "0.93";
+
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+
+    function roundTo50(value) {
+      return Math.round(value * 2) / 2;
+    }
+
+    function updateActive() {
+      buttons.forEach(btn => {
+        btn.classList.toggle(
+          "active",
+          parseFloat(btn.dataset.tip) === selectedTip
+        );
+      });
+    }
+
+    function saveToHistory(amount, rate, tip, tax, totalUsd, totalEur) {
+      const entry = {
+        date: new Date().toLocaleString('fr-FR'),
+        amount,
+        rate,
+        tip,
+        tax,
+        totalUsd,
+        totalEur
+      };
+
+      history.unshift(entry);
+      if (history.length > 10) history.pop();
+      
+      localStorage.setItem("history", JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      if (history.length === 0) {
+        historyList.innerHTML = '<div class="empty-history">Aucun historique</div>';
+        return;
+      }
+
+      historyList.innerHTML = history.map((item, index) => `
+        <div class="history-item" onclick="loadFromHistory(${index})">
+          <div class="history-info">
+            <div class="history-amount">$${item.amount} → $${item.totalUsd.toFixed(2)} (€${item.totalEur.toFixed(2)})</div>
+            <div class="history-details">${item.date} • Tip ${(item.tip * 100).toFixed(0)}% • Tax $${item.tax.toFixed(2)}</div>
+          </div>
+          <button class="history-delete" onclick="event.stopPropagation(); deleteHistory(${index})">×</button>
+        </div>
+      `).join('');
+    }
+
+    function loadFromHistory(index) {
+      const item = history[index];
+      amountInput.value = item.amount;
+      rateInput.value = item.rate;
+      selectedTip = item.tip;
+      updateActive();
+      calculate();
+    }
+
+    function deleteHistory(index) {
+      history.splice(index, 1);
+      localStorage.setItem("history", JSON.stringify(history));
+      renderHistory();
+    }
+
+    function calculate() {
+      const amount = parseFloat(amountInput.value);
+      const rate = parseFloat(rateInput.value);
+
+      if (isNaN(amount) || isNaN(rate)) {
+        details.textContent = "—";
+        totalUsd.textContent = "Total USD : —";
+        totalEur.textContent = "Total EUR : —";
+        return;
+      }
+
+      const tax = amount * TAX_RATE;
+      const tip = selectedTip > 0 ? Math.ceil(amount * selectedTip) : 0;
+      let totalUsdValue = roundTo50(amount + tax + tip);
+      const totalEurValue = totalUsdValue * rate;
+
+      details.textContent = `Tax : $${tax.toFixed(2)} | Tip : $${tip.toFixed(2)}`;
+      totalUsd.textContent = `Total USD : $${totalUsdValue.toFixed(2)}`;
+      totalEur.textContent = `Total EUR : €${totalEurValue.toFixed(2)}`;
+
+      localStorage.setItem("tip", selectedTip);
+      localStorage.setItem("rate", rate);
+
+      saveToHistory(amount, rate, selectedTip, tax, totalUsdValue, totalEurValue);
+    }
+
+    amountInput.addEventListener("input", calculate);
+    rateInput.addEventListener("input", calculate);
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        selectedTip = parseFloat(btn.dataset.tip);
+        updateActive();
+        calculate();
+      });
+    });
+
+    updateActive();
+    renderHistory();
+  </script>
+
+</body>
+</html>
+
+
+
