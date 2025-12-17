@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NYC Tip & Tax</title>
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#5f6bdc">
+  <meta name="theme-color" content="#5f6bdc">
 
   <style>
     * {
@@ -140,63 +140,6 @@
       font-size: 20px;
       opacity: 0.9;
     }
-
-    .history {
-      margin-top: 20px;
-    }
-
-    .history-item {
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .history-item:active {
-      transform: scale(0.98);
-    }
-
-    .history-info {
-      flex: 1;
-    }
-
-    .history-amount {
-      font-size: 16px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .history-details {
-      font-size: 12px;
-      color: #666;
-      margin-top: 4px;
-    }
-
-    .history-delete {
-      background: #ff4757;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-left: 8px;
-    }
-
-    .empty-history {
-      text-align: center;
-      color: #999;
-      font-size: 14px;
-      padding: 20px;
-    }
   </style>
 </head>
 
@@ -238,11 +181,6 @@
       <div class="total-usd" id="total-usd">Total USD : —</div>
       <div class="total-eur" id="total-eur">Total EUR : —</div>
     </div>
-
-    <div class="history">
-      <h2>📜 Historique</h2>
-      <div id="history-list" class="history-list"></div>
-    </div>
   </div>
 
   <script>
@@ -254,12 +192,9 @@
     const totalUsd = document.getElementById("total-usd");
     const totalEur = document.getElementById("total-eur");
     const buttons = document.querySelectorAll("button[data-tip]");
-    const historyList = document.getElementById("history-list");
 
     let selectedTip = parseFloat(localStorage.getItem("tip")) || 0;
     rateInput.value = localStorage.getItem("rate") || "0.93";
-
-    let history = JSON.parse(localStorage.getItem("history")) || [];
 
     function roundTo50(value) {
       return Math.round(value * 2) / 2;
@@ -272,56 +207,6 @@
           parseFloat(btn.dataset.tip) === selectedTip
         );
       });
-    }
-
-    function saveToHistory(amount, rate, tip, tax, totalUsd, totalEur) {
-      const entry = {
-        date: new Date().toLocaleString('fr-FR'),
-        amount,
-        rate,
-        tip,
-        tax,
-        totalUsd,
-        totalEur
-      };
-
-      history.unshift(entry);
-      if (history.length > 10) history.pop();
-      
-      localStorage.setItem("history", JSON.stringify(history));
-      renderHistory();
-    }
-
-    function renderHistory() {
-      if (history.length === 0) {
-        historyList.innerHTML = '<div class="empty-history">Aucun historique</div>';
-        return;
-      }
-
-      historyList.innerHTML = history.map((item, index) => `
-        <div class="history-item" onclick="loadFromHistory(${index})">
-          <div class="history-info">
-            <div class="history-amount">$${item.amount} → $${item.totalUsd.toFixed(2)} (€${item.totalEur.toFixed(2)})</div>
-            <div class="history-details">${item.date} • Tip ${(item.tip * 100).toFixed(0)}% • Tax $${item.tax.toFixed(2)}</div>
-          </div>
-          <button class="history-delete" onclick="event.stopPropagation(); deleteHistory(${index})">×</button>
-        </div>
-      `).join('');
-    }
-
-    function loadFromHistory(index) {
-      const item = history[index];
-      amountInput.value = item.amount;
-      rateInput.value = item.rate;
-      selectedTip = item.tip;
-      updateActive();
-      calculate();
-    }
-
-    function deleteHistory(index) {
-      history.splice(index, 1);
-      localStorage.setItem("history", JSON.stringify(history));
-      renderHistory();
     }
 
     function calculate() {
@@ -346,8 +231,6 @@
 
       localStorage.setItem("tip", selectedTip);
       localStorage.setItem("rate", rate);
-
-      saveToHistory(amount, rate, selectedTip, tax, totalUsdValue, totalEurValue);
     }
 
     amountInput.addEventListener("input", calculate);
@@ -362,16 +245,17 @@
     });
 
     updateActive();
-    renderHistory();
   </script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-  }
-</script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
 
 </body>
 </html>
+
 
 
 
